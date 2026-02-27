@@ -31,14 +31,12 @@ def save_gridworld_png(
     for r in range(rows):
         for c in range(cols):
             ch = grid[r][c]
-            if ch == "#":
+            if ch == "O":
                 img[r][c] = 1
             elif ch == "S":
                 img[r][c] = 2
             elif ch == "G":
                 img[r][c] = 3
-            elif ch.isdigit():
-                img[r][c] = 4
             else:
                 img[r][c] = 0
 

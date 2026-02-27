@@ -8,19 +8,27 @@ from .base import NeighborsFn, GoalTestFn, SearchResult, reconstruct_path
 State = TypeVar("State")
 
 
-def bfs(start: State, is_goal: GoalTestFn[State], neighbors: NeighborsFn[State],trace: list[State] | None = None,) -> SearchResult[State]:
+def bfs(
+    start: State,
+    is_goal: GoalTestFn[State],
+    neighbors: NeighborsFn[State],
+    h=None,  # ✅ add (ignored)
+    trace: list[State] | None = None,
+) -> SearchResult[State]:
     """
     Breadth-First Search: optimal in number of steps when all step costs are equal.
     Ignores weights (uses neighbors but discards step_cost).
     """
     q = deque([start])
     parent: dict[State, Optional[State]] = {start: None}
+
     expanded = 0
     frontier_max = 1
 
     while q:
         frontier_max = max(frontier_max, len(q))
         cur = q.popleft()
+
         expanded += 1
         if trace is not None:
             trace.append(cur)

@@ -11,7 +11,8 @@ def dfs(
     start: State,
     is_goal: GoalTestFn[State],
     neighbors: NeighborsFn[State],
-    trace: list[State] | None = None,   # ✅ add
+    h=None,  # ✅ added: ignored (lets main.py always pass h)
+    trace: list[State] | None = None,
 ) -> SearchResult[State]:
     stack: list[State] = [start]
     parent: dict[State, Optional[State]] = {start: None}
@@ -26,14 +27,13 @@ def dfs(
 
         expanded += 1
         if trace is not None:
-            trace.append(cur)           # ✅ add
+            trace.append(cur)
 
         if is_goal(cur):
             path = reconstruct_path(parent, cur)
             # DFS doesn't use step costs; report path length - 1 as cost (edges)
             return SearchResult(True, path, float(len(path) - 1), expanded, frontier_max)
 
-        # Typical DFS: push neighbors (optionally reversed for stable ordering)
         for nxt, _ in neighbors(cur):
             if nxt not in visited:
                 visited.add(nxt)

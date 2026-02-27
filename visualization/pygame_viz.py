@@ -1,18 +1,27 @@
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Any, Callable
+
 import pygame
 
 State = tuple[int, int]
 
+# Your report legend
+WALL = "O"
+START = "S"
+GOAL = "G"
+FREE = "F"
+
 
 def run_trace_viewer(
-        grid: list[list[str]],
-        trace: list[State],
-        path: list[State] | None,
-        cell_size: int = 30,
-        start_fps: int = 20,
-        title_line1: str = "",
-        title_line2: str = "",
+    grid: list[list[str]],
+    trace: list[State],
+    path: list[State] | None,
+    cell_size: int = 30,
+    start_fps: int = 20,
+    title_line1: str = "",
+    title_line2: str = "",
 ) -> None:
     """
     Replays the expansion trace in a Pygame window.
@@ -44,8 +53,7 @@ def run_trace_viewer(
 
     def draw() -> None:
         screen.fill((0, 0, 0))
-        show_path = (i >= len(trace))
-
+        show_path = i >= len(trace)
 
         for r in range(rows):
             for c in range(cols):
@@ -53,27 +61,27 @@ def run_trace_viewer(
                 rect = pygame.Rect(c * cell_size, r * cell_size, cell_size, cell_size)
 
                 # base tile
-                if ch == "#":
-                    base = (35, 35, 35)  # wall
+                if ch == WALL:
+                    base = (35, 35, 35)  # obstacle
                 else:
                     base = (230, 230, 230)  # free
                 pygame.draw.rect(screen, base, rect)
 
                 # expanded overlay (blue)
-                if (r, c) in expanded and ch != "#":
+                if (r, c) in expanded and ch != WALL:
                     pygame.draw.rect(screen, (120, 170, 255), rect)
 
-                # final path overlay (RED now)
-                if show_path and (r, c) in path_set and ch not in ("S", "G", "#"):
+                # final path overlay (red)
+                if show_path and (r, c) in path_set and ch not in (START, GOAL, WALL):
                     pygame.draw.rect(screen, (255, 60, 60), rect)
 
                 # start/goal markers
-                if ch == "S":
+                if ch == START:
                     pygame.draw.rect(screen, (120, 255, 120), rect)
-                elif ch == "G":
+                elif ch == GOAL:
                     pygame.draw.rect(screen, (255, 120, 120), rect)
 
-                # optional: show weights
+                # optional: show weights (only if you still use digits)
                 if ch.isdigit():
                     txt = font.render(ch, True, (0, 0, 0))
                     screen.blit(txt, (rect.x + 4, rect.y + 2))
@@ -82,15 +90,14 @@ def run_trace_viewer(
                 pygame.draw.rect(screen, (0, 0, 0), rect, 1)
 
         # HUD
-        # HUD
         y = 6
         if title_line1:
-            hud0 = font.render(title_line1, True, (255, 255, 255))
-            screen.blit(hud0, (8, y))
+            hud1 = font.render(title_line1, True, (255, 255, 255))
+            screen.blit(hud1, (8, y))
             y += 18
         if title_line2:
-            hud00 = font.render(title_line2, True, (255, 255, 255))
-            screen.blit(hud00, (8, y))
+            hud2 = font.render(title_line2, True, (255, 255, 255))
+            screen.blit(hud2, (8, y))
             y += 18
 
         hud = font.render(
@@ -130,8 +137,8 @@ def run_trace_viewer(
 
         draw()
 
-from pathlib import Path
-from typing import Callable, Any
+
+
 
 def run_launcher(
     maps: list[Path],
@@ -173,12 +180,18 @@ def run_launcher(
         map_name = maps[map_i].name
         algo_name = algos[algo_i]
 
-        line1 = font.render(f"Map:  {map_name}   ({map_i+1}/{len(maps)})", True, (220, 220, 220))
-        line2 = font.render(f"Algo: {algo_name}   ({algo_i+1}/{len(algos)})", True, (220, 220, 220))
+        line1 = font.render(
+            f"Map:  {map_name}   ({map_i + 1}/{len(maps)})", True, (220, 220, 220)
+        )
+        line2 = font.render(
+            f"Algo: {algo_name}   ({algo_i + 1}/{len(algos)})", True, (220, 220, 220)
+        )
         screen.blit(line1, (20, 80))
         screen.blit(line2, (20, 120))
 
-        help1 = small.render("LEFT/RIGHT: change map   UP/DOWN: change algo", True, (180, 180, 180))
+        help1 = small.render(
+            "LEFT/RIGHT: change map   UP/DOWN: change algo", True, (180, 180, 180)
+        )
         help2 = small.render("ENTER: run   ESC/Q: quit", True, (180, 180, 180))
         screen.blit(help1, (20, 180))
         screen.blit(help2, (20, 205))
@@ -197,24 +210,21 @@ def run_launcher(
             elif event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_ESCAPE, pygame.K_q):
                     running = False
-
                 elif event.key == pygame.K_LEFT:
                     map_i = (map_i - 1) % len(maps)
-
                 elif event.key == pygame.K_RIGHT:
                     map_i = (map_i + 1) % len(maps)
-
                 elif event.key == pygame.K_UP:
                     algo_i = (algo_i - 1) % len(algos)
-
                 elif event.key == pygame.K_DOWN:
                     algo_i = (algo_i + 1) % len(algos)
-
                 elif event.key == pygame.K_RETURN:
-                    # Compute + run viewer
                     env, result, trace = run_once(maps[map_i], algos[algo_i])
                     title1 = f"Map: {maps[map_i].name} | Algo: {algos[algo_i]}"
-                    title2 = f"found={result.found} cost={result.cost} expanded={result.expanded} frontier_max={result.frontier_max}"
+                    title2 = (
+                        f"found={result.found} cost={result.cost} "
+                        f"expanded={result.expanded} frontier_max={result.frontier_max}"
+                    )
 
                     run_trace_viewer(
                         grid=env.grid,
@@ -226,6 +236,4 @@ def run_launcher(
                         title_line2=title2,
                     )
 
-    pygame.quit()
-
-
+pygame.quit()

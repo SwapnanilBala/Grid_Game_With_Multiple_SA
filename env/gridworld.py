@@ -7,7 +7,7 @@ from typing import Iterable
 
 State = tuple[int, int]  # (row, col)
 
-WALL = "#"
+WALL = "O"      # was "#"
 START = "S"
 GOAL = "G"
 
@@ -21,7 +21,7 @@ class GridWorld:
     @classmethod
     def from_file(cls, path: str | Path) -> "GridWorld":
         path = Path(path)
-        lines = [line.rstrip("\n") for line in path.read_text(encoding="utf-8").splitlines()]
+        lines = [line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()]
         # remove empty lines
         lines = [ln for ln in lines if ln.strip() != ""]
 
@@ -34,7 +34,11 @@ class GridWorld:
         # Ensure rectangular
         for r in range(rows):
             if len(grid[r]) != cols:
-                raise ValueError(f"Non-rectangular map at row {r}: expected {cols}, got {len(grid[r])}")
+                bad_line = "".join(grid[r])
+                raise ValueError(
+                    f"Non-rectangular map at row {r} (line {r + 1}): expected {cols}, got {len(grid[r])}. "
+                    f"Row repr: {bad_line!r}"
+                )
 
         start: State | None = None
         goal: State | None = None
@@ -70,15 +74,9 @@ class GridWorld:
         return self.grid[r][c] != WALL
 
     def step_cost(self, s: State) -> float:
-        """
-        Cost to ENTER cell s.
-        - '.' / 'S' / 'G' => 1
-        - digits '1'..'9' => that digit (weighted terrain)
-        """
         r, c = s
         ch = self.grid[r][c]
-        if ch.isdigit():
-            return float(int(ch))
+        # With your report legend: F/S/G cost 1
         return 1.0
 
     def neighbors4(self, s: State) -> Iterable[tuple[State, float]]:

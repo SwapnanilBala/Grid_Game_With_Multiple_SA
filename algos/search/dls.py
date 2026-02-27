@@ -11,16 +11,17 @@ def dls(
     start: State,
     is_goal: GoalTestFn[State],
     neighbors: NeighborsFn[State],
-    depth_limit: int,
+    depth_limit: int = 50,          # ✅ default so launcher/CLI can run it
+    h=None,                         # ✅ ignored; keeps run_once simple
+    trace: list[State] | None = None,  # ✅ for pygame replay
 ) -> SearchResult[State]:
     """
     Depth-Limited Search: DFS with a maximum depth.
     Returns failure if not found within limit.
     """
-    # stack holds (state, depth)
     stack: list[tuple[State, int]] = [(start, 0)]
     parent: dict[State, Optional[State]] = {start: None}
-    best_depth_seen: dict[State, int] = {start: 0}  # to avoid revisiting at >= depth
+    best_depth_seen: dict[State, int] = {start: 0}
 
     expanded = 0
     frontier_max = 1
@@ -28,7 +29,10 @@ def dls(
     while stack:
         frontier_max = max(frontier_max, len(stack))
         cur, depth = stack.pop()
+
         expanded += 1
+        if trace is not None:
+            trace.append(cur)       # ✅ add
 
         if is_goal(cur):
             path = reconstruct_path(parent, cur)

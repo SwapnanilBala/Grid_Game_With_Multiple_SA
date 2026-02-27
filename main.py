@@ -21,22 +21,19 @@ def run_once(map_path: Path, algo_name: str):
     env = GridWorld.from_file(map_path)
     trace: list[tuple[int, int]] = []
 
-    if algo_name == "astar":
-        result = ALGOS[algo_name](
-            start=env.start,
-            is_goal=env.is_goal,
-            neighbors=env.neighbors4,
-            h=env.manhattan,
-            trace=trace,
-        )
-    else:
-        # dfs (and any other algo that doesn't need heuristic)
-        result = ALGOS[algo_name](
-            start=env.start,
-            is_goal=env.is_goal,
-            neighbors=env.neighbors4,
-            trace=trace,
-        )
+    kwargs = dict(
+        start=env.start,
+        is_goal=env.is_goal,
+        neighbors=env.neighbors4,
+        h=env.manhattan,
+        trace=trace,
+    )
+
+    # BDS needs the explicit goal state
+    if algo_name == "bds":
+        kwargs["goal"] = env.goal
+
+    result = ALGOS[algo_name](**kwargs)
 
     return env, result, trace
 
