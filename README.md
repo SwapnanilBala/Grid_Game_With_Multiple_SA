@@ -1,99 +1,150 @@
-# 🧭✨ GridWorld Search Visualizer (Maze_Game) — Watch Algorithms Think in Real Time
+# GridWorld Search Visualizer (Maze_Game)
 
-A modular **pathfinding + search algorithm playground** that lets you **run, compare, and visually replay** classical AI search strategies on custom GridWorld maps.  
-This project models a 2D grid environment as a **state space** (each cell is a state; valid moves define transitions) and applies multiple **graph search paradigms** to compute a route from **Start (S)** to **Goal (G)** while avoiding **Obstacles (O)**.  
+A modular **pathfinding + search algorithm playground** that lets you **run, compare, and visually replay** classical AI search strategies on custom GridWorld maps.
 
-🔥 The fun part: you can **see the search happen**—node expansions appear live, then the final path gets overlaid so you can instantly compare algorithm behavior.
+This project models a 2D grid environment as a **state space** (each cell is a state; valid moves define transitions) and applies multiple **graph search paradigms** to compute a route from **Start (`S`)** to **Goal (`G`)** while avoiding **Obstacles (`O`)**.
+
+The key feature is that you can **watch the search happen** in real time: node expansions appear live, followed by an overlay of the final path.
 
 ---
 
-## 🚀 What this project includes (everything in one place)
+## Overview
 
-### 🎯 Core Idea
-- Treat the grid as a graph: **State = (row, col)**  
-- Use **4-direction movement** (up/down/left/right)  
-- Run search algorithms under a **unified contract** so new algorithms plug in cleanly  
-- Capture performance data automatically via a standard `SearchResult`
+- **Grid as a graph**
+  - State = `(row, col)`
+  - 4-direction movement (up/down/left/right)
+- **Unified algorithm interface** so new search strategies plug in cleanly
+- **Standard `SearchResult` output** to capture performance statistics
 
-### 🧠 Algorithms Implemented
-**Uninformed Search**
+---
+
+## Features
+
+- **Modular design**: easy to add new algorithms and maps
+- **Real-time visualization**: watch the search process unfold
+- **Performance metrics**: track expanded nodes, frontier size, and more
+- **Customizable maps**: create and load your own GridWorld maps
+
+---
+
+## Algorithms implemented
+
+### Uninformed search
+
 - **BFS** — shortest path in *steps* on uniform-cost grids (great baseline)
-- **DFS** — explores deep paths fast, low memory, not optimal
-- **DLS (Depth-Limited Search)** — DFS with a depth cap (great for demonstrating “too shallow fails vs deeper succeeds”)
+- **DFS** — explores deep paths quickly with low memory usage, not optimal
+- **DLS (Depth-Limited Search)** — DFS with a depth cap (useful for demonstrating “too shallow fails vs deeper succeeds”)
 
-**Cost / Optimal Search**
-- **UCS (Uniform Cost Search / Dijkstra)** — optimal when step costs are non-negative (acts like BFS when all costs are 1)
+### Cost / optimal search
 
-**Heuristic Search**
+- **UCS (Uniform Cost Search / Dijkstra)** — optimal when step costs are non-negative (equivalent to BFS when all costs are 1)
+
+### Heuristic search
+
 - **A\*** — guided search using **Manhattan distance** (typically expands far fewer nodes than BFS)
 
-**Meet-in-the-middle**
-- **BDS (Bidirectional Search / Bidirectional BFS)** — searches from start and goal simultaneously and “meets” in the middle (efficient on unweighted maps)
+### Meet-in-the-middle
 
-### 📊 Metrics + Instrumentation (built-in)
-Every run returns a `SearchResult` with:
-- `found` → whether a path exists
-- `path` → the final route (sequence of states)
-- `cost` → path cost (for uniform grids, this is basically steps)
-- `expanded` → number of expanded nodes (**time proxy**)
-- `frontier_max` → maximum frontier size (**memory proxy**)
-
-### 🎮 Visualization (Pygame Replay + PNG Export)
-- **Interactive Launcher UI (Pygame)**  
-  Pick a map + algorithm, run it, then watch:
-  - expanded nodes (blue)
-  - final path overlay (red)
-  - start (green) + goal (red/pink)
-
-- **Single-run mode** also supports saving a **PNG** summary (matplotlib) into `results/figures/`.
+- **BDS (Bidirectional Search / Bidirectional BFS)** — searches from start and goal simultaneously and meets in the middle (efficient on unweighted maps)
 
 ---
 
-## 🗺️ Map Format (S/G/O/F Legend)
-Maps are plain `.txt` files inside:
+## Metrics and instrumentation
 
+Every run returns a `SearchResult` with:
+
+- `found`: whether a path exists
+- `path`: the final route (sequence of states)
+- `cost`: path cost (for uniform grids, this is effectively steps)
+- `expanded`: number of expanded nodes (time proxy)
+- `frontier_max`: maximum frontier size (memory proxy)
+
+---
+
+## Visualization
+
+- **Interactive launcher (Pygame)**
+  - Select a map and algorithm
+  - Watch expanded nodes and the final path overlay
+- **PNG export (matplotlib)**
+  - Single-run mode supports saving a PNG summary into `results/figures/`
+
+---
+
+## Map format (`S` / `G` / `O` / `F`)
+
+Maps are plain `.txt` files located in `assets/maps/`.
 
 Legend:
-- `S` = Start  
-- `G` = Goal  
-- `O` = Obstacle  
-- `F` = Free space  
 
-✅ Important: **All rows must be the same width** (rectangular grid).
+- `S` = Start
+- `G` = Goal
+- `O` = Obstacle
+- `F` = Free space
 
-Example map:
+Important:
+
+- All rows must be the same width (rectangular grid).
+
+Example:
+
 ```txt
 OOOOOOOOOOOO
 OSFFFFFOFFFO
 OFFOOOFFFGOO
-OOOOOOOOOOOO 
+OOOOOOOOOOOO
 ```
 
-### Run this if you add your custom map and it has some sort of size issue: python tools/fix_maps.py 
+If you add a custom map and run into sizing/format issues:
 
-This here Automatically :
+```bash
+python tools/fix_maps.py
+```
+
+This script automatically:
+
 - strips trailing whitespace
 - removes empty lines
-- normalizes row lengths (pads with F / truncates when needed)
+- normalizes row lengths (pads with `F` / truncates when needed)
 
-## Let's talk about how to actually run this thing
+---
 
--> python main.py --mode launcher 
+## Setup
 
-Or you can just run the main.py file
+- Python 3.10+ recommended
+- `pygame`
+- `matplotlib`
 
-### These are the controls after you see the UI popping up: 
+Note:
 
-- ← / → : switch map
+- The existing `requirements` may include extra packages that aren’t used.
 
-- ↑ / ↓ : switch algorithm
+---
 
-- Enter : run visualization
+## Running
 
-- Esc : exit viewer / quit
+Launcher mode:
 
-## Project Structure 
+```bash
+python main.py --mode launcher
+```
 
+You can also run `main.py` directly from your IDE.
+
+---
+
+## Controls (launcher UI)
+
+- Left / Right: switch map
+- Up / Down: switch algorithm
+- Enter: run visualization
+- Esc: exit viewer / quit
+
+---
+
+## Project structure
+
+```text
 Maze_Game/
 ├─ algos/
 │  └─ search/                # BFS, DFS, DLS, UCS, A*, BDS
@@ -103,33 +154,20 @@ Maze_Game/
 ├─ results/figures/          # saved PNG outputs
 ├─ tools/                    # map fixer/validator scripts
 └─ main.py                   # entry point (launcher + single run)
+```
 
-### The Requirements 
+---
 
-- Python 3.10+ recommended
+## Why this project is useful
 
-- pygame
-
-- matplotlib
-
-* A short note:  ignore the requirements as it includes a lot of packages that we really haven't used.
-
-
-🌟 Why this project is not miserable and actually so cool:
-
-* This is a compact platform to demonstrate and compare search behavior:
+This is a compact platform to demonstrate and compare search behavior:
 
 - Visually (trace replay)
-
 - Quantitatively (expanded/frontier stats)
-
 - Structurally (clean separation of env / algos / visualization)
 
-* Perfect for:
+It’s a good fit for:
 
-- `AI search` coursework
-
+- AI search coursework
 - Algorithm comparisons
-
-
-* A BIG FAT YESSS: Anyone who wants to literally `watch` algorithms “think”
+- Anyone who wants to literally watch algorithms “think”

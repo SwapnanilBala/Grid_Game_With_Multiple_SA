@@ -19,6 +19,8 @@ def save_gridworld_png(
     Saves a PNG visualization of the grid + optional path.
     Uses default matplotlib colors (no custom styling).
     """
+    # This is a lightweight "export" visualizer.
+    # The Pygame viewer is for interactive replay; this one is for saving a static image.
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -38,6 +40,8 @@ def save_gridworld_png(
             elif ch == "G":
                 img[r][c] = 3
             else:
+                # Anything that's not a wall/start/goal is treated as walkable.
+                # (That includes weighted terrain like M/W/R.)
                 img[r][c] = 0
 
     fig, ax = plt.subplots()
@@ -55,6 +59,7 @@ def save_gridworld_png(
 
     # Overlay path (if any)
     if path is not None:
+        # Plot the path as a simple line over the grid.
         pr = []
         pc = []
         for (r, c) in path:
