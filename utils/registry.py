@@ -7,14 +7,14 @@ from typing import Callable, Any
 # - ALGOS: a name -> function mapping (so the launcher/CLI can pick algorithms by string)
 # - discover_maps: helper to list available map files
 
-from Maze_Game.algos.search.astar import astar
-from Maze_Game.algos.search.dfs import dfs
-from Maze_Game.algos.search.bfs import bfs
-from Maze_Game.algos.search.ucs import ucs
-from Maze_Game.algos.search.dls import dls
+from algos.search.astar import astar
+from algos.search.dfs import dfs
+from algos.search.bfs import bfs
+from algos.search.ucs import ucs
+from algos.search.dls import dls
 # If our bds file defines bds(...) we use that; if it defines bidirectional_search(...)
 # we can import that instead:
-from Maze_Game.algos.search.bds import bds  # OR: from Maze_Game.algos.search.bds import bidirectional_search as bds
+from algos.search.bds import bds  # OR: from algos.search.bds import bidirectional_search as bds
 
 # Generic type for "something callable" (we keep it loose because different algos take slightly different params).
 AlgoFn = Callable[..., Any]

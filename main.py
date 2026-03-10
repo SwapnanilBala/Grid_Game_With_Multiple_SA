@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from Maze_Game.env.gridworld import GridWorld
-from Maze_Game.utils.registry import ALGOS, discover_maps
-from Maze_Game.visualization.gridworld_viz import save_gridworld_png
-from Maze_Game.visualization.pygame_viz import run_launcher, run_trace_viewer
+from env.gridworld import GridWorld
+from utils.registry import ALGOS, discover_maps
+from visualization.gridworld_viz import save_gridworld_png
+from visualization.pygame_viz import run_launcher, run_trace_viewer
 
 # Paths we use throughout the project (computed relative to this file).
 # Keeping them here makes it easy to run the project from different working directories.
@@ -14,6 +14,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 ASSETS_DIR = PROJECT_ROOT / "assets"
 RESULTS_DIR = PROJECT_ROOT / "results"
 CONFIGS_DIR = PROJECT_ROOT / "configs"
+ANALYSIS_DIR = PROJECT_ROOT / "analysis"
 
 
 def run_once(map_path: Path, algo_name: str):
@@ -66,7 +67,7 @@ def main() -> None:
         help="Search algorithm to run (single mode).",
     )
     parser.add_argument("--out", default=None, help="PNG filename inside results/figures/ (single mode)")
-    parser.add_argument("--cell", type=int, default=30, help="Cell size for Pygame viewer.")
+    parser.add_argument("--cell", type=int, default=38, help="Cell size for Pygame viewer.")
     parser.add_argument("--fps", type=int, default=15, help="Start FPS for Pygame viewer.")
     args = parser.parse_args()
 
@@ -74,6 +75,7 @@ def main() -> None:
     RESULTS_DIR.mkdir(exist_ok=True)
     figures_dir = RESULTS_DIR / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
+    ANALYSIS_DIR.mkdir(exist_ok=True)
 
     print("Project root:", PROJECT_ROOT)
     print("Assets:", ASSETS_DIR.exists(), ASSETS_DIR)
@@ -95,6 +97,7 @@ def main() -> None:
             run_once=run_once,
             cell_size=args.cell,
             start_fps=args.fps,
+            analysis_dir=ANALYSIS_DIR,
         )
         return
 
