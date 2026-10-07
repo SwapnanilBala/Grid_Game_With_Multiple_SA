@@ -1,25 +1,2 @@
-# ---------- Core runtime ----------
-pip>=24.0
-setuptools>=69.0
-wheel>=0.42
-
-# ---------- Numerical + data handling ----------
-numpy>=1.26
-pandas>=2.2
-
-# ---------- Visualization ----------
-matplotlib>=3.8
-pillow>=10.0
-
-# ---------- Real-time grid visualization ----------
 pygame>=2.6.1
-
-# ---------- Progress + pretty console ----------
-tqdm>=4.66
-rich>=13.7
-
-# ---------- Config / serialization ----------
-pyyaml>=6.0.1
-
-# ---------- Graph utilities (optional but common in AI/search projects) ----------
-networkx>=3.2
+matplotlib>=3.8
